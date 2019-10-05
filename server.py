@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 
 
 def _valid_secret_key(method=None):
@@ -58,8 +59,9 @@ def view_recent_invoices():
     service = google_service_api.get_service()
     data = processing.get_recent_invoices(
         service, spreadsheet_id=sheet_id, invoice_count=invoice_count)
-    json_data = json.dumps(data)
-    return json_data
+    # json_data = json.dumps(data)
+    # return json_data
+    return jsonify(data)
 
 
 @app.route("/getCategories")
