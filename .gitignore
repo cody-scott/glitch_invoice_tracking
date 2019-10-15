@@ -3,4 +3,10 @@
 .idea/*
 .data/*
 *.bat
-testing.py
+*.xlsx
+*.ipynb
+*.pyc
+*.ipynb_checkpoints
+.vscode/*
+*.csv
+*.DS_STORE

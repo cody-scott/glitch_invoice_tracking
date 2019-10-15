@@ -8,7 +8,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['JSON_SORT_KEYS'] = False
+
+from _log import setup_logger
+setup_logger()
+
+import logging
+logging.info("Starting app")
 
 
 def _valid_secret_key(method=None):
@@ -19,6 +24,7 @@ def _valid_secret_key(method=None):
     if sk == os.getenv("secret_key"):
         return True
     else:
+        logging.warning("Invalid Secret Key: {}".format(sk))
         return False
 
 
@@ -38,13 +44,15 @@ def view_submit_invoices():
     res = request
     if not _valid_secret_key('POST'):
         return "Secret key not valid"
+      
+    logging.info("logging receipt")
 
     sheet_id = request.json.get('sheet_id')
     service = google_service_api.get_service()
 
     data = request.json.get('data', [])
     processing.submit_invoice(service, sheet_id, data)
-
+    logging.info("Invoice Submitted")
     return "Success"
 
 
@@ -53,6 +61,8 @@ def view_recent_invoices():
     if not _valid_secret_key():
         return "Secret key not valid"
 
+    logging.info("getting recent invoices")
+    
     sheet_id = request.headers.get('sheet_id')
     invoice_count = request.headers.get('invoice_count')
 
@@ -68,7 +78,9 @@ def view_recent_invoices():
 def view_get_categories():
     if not _valid_secret_key():
         return "Secret key not valid"
-
+    
+    logging.info("Getting categories")
+    
     sheet_id = request.headers.get('SHEET_ID')
     service = google_service_api.get_service()
     data = processing.get_categories(service, sheet_id)

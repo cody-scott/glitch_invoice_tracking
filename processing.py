@@ -54,6 +54,8 @@ def get_recent_invoices(service, spreadsheet_id, invoice_count=None):
 def submit_invoice(service, spreadsheet_id, data):
     sheet = service.spreadsheets()
 
+    data[0] = data[0].strip()
+    
     dct = {
         'spreadsheetId': spreadsheet_id,
         'range': 'Appleshortcuts_Response',
@@ -70,7 +72,3 @@ def submit_invoice(service, spreadsheet_id, data):
             'values': [data]
             }
     ).execute()
-
-    pass
-
-
