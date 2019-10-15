@@ -1,7 +1,7 @@
 import os
 import processing
 import json
-
+import logging
 from flask import Flask, request, jsonify
 import google_service_api
 from dotenv import load_dotenv
@@ -11,8 +11,11 @@ app = Flask(__name__)
 
 from _log import setup_logger
 setup_logger()
+gunicorn_logger = logging.getLogger('gunicorn.error')
+app.logger.handlers = gunicorn_logger.handlers
+app.logger.setLevel(gunicorn_logger.level)
 
-import logging
+
 logging.info("Starting app")
 
 
