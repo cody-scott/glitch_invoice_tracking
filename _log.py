@@ -8,8 +8,11 @@ from logging import Formatter
 
 
 def setup_logger():
+    if not os.path.isdir('logs'):
+        os.makedirs('logs')
+
     nw = datetime.datetime.now()
-    log_file = os.path.join(".data/logs", "Log_{}{}{}.log".format(nw.year, nw.month, nw.day))
+    log_file = os.path.join("logs", "Log_{}{}{}.log".format(nw.year, nw.month, nw.day))
 
 
     root = logging.getLogger()

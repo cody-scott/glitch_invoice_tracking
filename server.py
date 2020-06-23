@@ -7,6 +7,9 @@ import google_service_api
 from dotenv import load_dotenv
 load_dotenv()
 
+import load_google
+load_google.load_g_data()
+
 app = Flask(__name__)
 
 from _log import setup_logger
