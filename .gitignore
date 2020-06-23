@@ -10,3 +10,4 @@
 .vscode/*
 *.csv
 *.DS_STORE
+api_credentials.json
