@@ -17,6 +17,10 @@ def push_expense(spreadsheet_id, data):
     amount = data[2]
     tag = data[3]
 
+    # firefly doesn't accept zero dollar api requests apparently
+    if amount == 0:
+        return
+
     # fix date
     tm_dt = datetime.datetime.strptime(date, "%m/%d/%Y")
     date = tm_dt.strftime("%Y-%m-%d")
@@ -40,14 +44,14 @@ def push_expense(spreadsheet_id, data):
     token = os.getenv("ff_token")
     headers = hdrs = {'Authorization': f"Bearer {token}"}
 
-    if token is not None:
-        logging.info(True)
-        logging.info(len(token))
-    else:
-        logging.info(False)
+    # if token is not None:
+    #     logging.info(True)
+    #     logging.info(len(token))
+    # else:
+    #     logging.info(False)
 
-    logging.info(data)
-    logging.info(_url)
+    # logging.info(data)
+    # logging.info(_url)
 
     r = requests.post(_url, json=data, headers=headers)
-    logging.info(r.text)
+    # logging.info(r.text)
