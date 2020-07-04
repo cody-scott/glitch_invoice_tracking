@@ -59,6 +59,10 @@ def view_submit_invoices():
     service = google_service_api.get_service()
 
     data = request.json.get('data', [])
+
+    logging.info(data[1])
+    logging.info(data[2])
+
     processing.submit_invoice(service, sheet_id, data)
 
     firefly.push_expense(sheet_id, data)

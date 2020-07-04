@@ -19,12 +19,6 @@ def push_expense(spreadsheet_id, data):
     tm_dt = datetime.datetime.strptime(date, "%m/%d/%Y")
     date = tm_dt.strftime("%Y-%m-%d")
 
-    # fix amount
-    amount = float(amount.replace("$", "").replace(",",""))
-
-    # check to make sure only my requests are going through. 
-    # smarter way would be to add a different token system and route on that maybe
-
 
     _url = f"{os.getenv('ff_url')}/api/v1/transactions"
 
