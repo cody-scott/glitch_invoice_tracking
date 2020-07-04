@@ -16,7 +16,7 @@ def push_expense(spreadsheet_id, data):
     tag = data[3]
 
     # fix date
-    tm_dt = datetime.datetime.strptime(date, "%b %d, %Y")
+    tm_dt = datetime.datetime.strptime(date, "%m/%d/%Y")
     date = tm_dt.strftime("%Y-%m-%d")
 
     # fix amount
