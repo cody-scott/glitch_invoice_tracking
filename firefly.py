@@ -1,6 +1,8 @@
 import requests
 import os
 import datetime
+import logging
+
 
 def push_expense(spreadsheet_id, data):
     if len(data) == 0:
@@ -37,6 +39,12 @@ def push_expense(spreadsheet_id, data):
 
     token = os.getenv("ff_token")
     headers = hdrs = {'Authorization': f"Bearer {token}"}
+
+    if token is not None:
+        logging.info(True)
+        logging.info(len(token))
+    else:
+        logging.info(False)
 
     r = requests.post(_url, json=data, headers=headers)
     logging.info(r.text)
