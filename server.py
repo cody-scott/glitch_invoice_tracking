@@ -7,6 +7,8 @@ import google_service_api
 from dotenv import load_dotenv
 load_dotenv()
 
+import firefly
+
 import load_google
 load_google.load_g_data()
 
@@ -57,7 +59,11 @@ def view_submit_invoices():
     service = google_service_api.get_service()
 
     data = request.json.get('data', [])
-    processing.submit_invoice(service, sheet_id, data)
+    # processing.submit_invoice(service, sheet_id, data)
+
+    firefly.push_expense(sheet_id, data)
+
+
     logging.info("Invoice Submitted")
     return "Success"
 
