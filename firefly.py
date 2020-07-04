@@ -39,3 +39,4 @@ def push_expense(spreadsheet_id, data):
     headers = hdrs = {'Authorization': f"Bearer {token}"}
 
     r = requests.post(_url, json=data, headers=headers)
+    logging.info(r.text)
