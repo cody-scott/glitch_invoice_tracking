@@ -46,5 +46,8 @@ def push_expense(spreadsheet_id, data):
     else:
         logging.info(False)
 
+    logging.info(data)
+    logging.info(_url)
+
     r = requests.post(_url, json=data, headers=headers)
     logging.info(r.text)
