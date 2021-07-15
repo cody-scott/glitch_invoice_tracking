@@ -1,19 +1,21 @@
-import requests
-import json
 import re
 from collections import OrderedDict
+from typing import Optional
+from fastapi.encoders import jsonable_encoder
+from googleapiclient.discovery import Resource
+import models
 
-import logging
+import datetime
 
 
-def _get_range_data(service, spreadsheet_id, _range):
+def _get_range_data(service: Resource, spreadsheet_id: str, _range: str):
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=spreadsheet_id,
                                 range=_range).execute()
     return result
 
 
-def get_categories(service, spreadsheet_id):
+def get_categories(service: Resource, spreadsheet_id: str):
     _catg_range = "'Data Table'!C2:C200"
     result = _get_range_data(service, spreadsheet_id, _catg_range)
     values = [i[0] for i in result['values']]
@@ -21,13 +23,10 @@ def get_categories(service, spreadsheet_id):
     return values
 
 
-def get_recent_invoices(service, spreadsheet_id, invoice_count=None):
-    if invoice_count is None:
-        invoice_count = 10
-    else:
-        invoice_count = int(invoice_count)
+def get_recent_invoices(service: Resource, spreadsheet_id: str, invoice_count: Optional[int]=None):
+    invoice_count = 10 if invoice_count is None else invoice_count
 
-    _range = "'Appleshortcuts_Response'!A1:D500"
+    _range = "'Appleshortcuts_Response'!A:D"
     result = _get_range_data(service, spreadsheet_id, _range)
     values = result['values'][1:]
 
@@ -35,36 +34,31 @@ def get_recent_invoices(service, spreadsheet_id, invoice_count=None):
     sub_values = values[min_index:]
 
     cost_pattern = re.compile(pattern='\$\s*-')
-    data_dict = OrderedDict()
+    results = []
     for val in sub_values:
         _item = val[0].strip()
-        _date = val[1].strip().split("/")
-        _cost = val[2].strip()
 
-        if len(cost_pattern.findall(_cost)) > 0:
-            _cost = '$ 0.00'
+        _fmt = "%m/%d/%Y" if "-" not in val[1] else "%Y-%m-%d"
+        _date = datetime.datetime.strptime(val[1], _fmt).date()
+        _cost = val[2].replace('$ ', '').strip()
+        _cost = 0 if _cost=="-" else _cost
+        _category = val[3].strip()
+        results.append(models.InvoiceModel(
+            item=_item, 
+            date=_date, 
+            cost=_cost, 
+            category=_category))
 
-        out_str = " - ".join([_item, "/".join(_date), _cost])
-        file_str = " ".join([_item, "_".join([_date[1], _date[0], _date[2]])])
-        data_dict[out_str] = file_str
 
-    return data_dict
+    return results
 
 
-def submit_invoice(service, spreadsheet_id, data):
+def submit_invoice(service: Resource, spreadsheet_id: str, data: models.InvoiceModel):
     sheet = service.spreadsheets()
 
-    data[0] = data[0].strip()
+    data = [_ for _ in jsonable_encoder(data).values()]
     
-    dct = {
-        'spreadsheetId': spreadsheet_id,
-        'range': 'Appleshortcuts_Response',
-        'valueInputOption': 'USER_ENTERED',
-        'body': {
-            'values': [data]
-        }
-    }
-    sheet.values().append(
+    res = sheet.values().append(
         spreadsheetId=spreadsheet_id,
         range='Appleshortcuts_Response',
         valueInputOption='USER_ENTERED',
@@ -72,3 +66,5 @@ def submit_invoice(service, spreadsheet_id, data):
             'values': [data]
             }
     ).execute()
+
+    return res

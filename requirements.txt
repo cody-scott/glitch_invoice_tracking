@@ -1,7 +1,8 @@
-Flask
-requests
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 python-dotenv
-gunicorn
+fastapi
+python-jose[cryptography]
+passlib[bcrypt]
+uvicorn[standard]

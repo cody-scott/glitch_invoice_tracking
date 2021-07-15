@@ -7,8 +7,9 @@
 *.ipynb
 *.pyc
 *.ipynb_checkpoints
-.vscode/*
+**.vscode/*
 *.csv
 *.DS_STORE
 api_credentials.json
 *.log
+**__pycache__*
